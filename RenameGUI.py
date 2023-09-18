@@ -259,26 +259,27 @@ class NewGUI():
 
         self.entry_path = tk.Entry(fg='grey')
         self.entry_path_default = configs[0]
-        #self.entry_path_default = "D:\\Computer\\Python\\RenameGUI\\testfiles"        
         self.entry_path.insert(0, self.entry_path_default)
-        self.entry_path.place(x=edge_distance, y=edge_distance, height=entry_height, relwidth=1, width=pts('-', edge_distance, '-', edge_distance), anchor='nw')
+        self.entry_path.grid(row=0, column=0, columnspan=2, sticky='NWSE', padx=3, pady=3)
         self.entry_path.bind("<FocusIn>", self.focus_in_entry_path)
         
         self.entry_from = tk.Entry(fg='grey')
         self.entry_from_default = "Change from"
-        #self.entry_from_default = "^"
         self.entry_from.insert(0, self.entry_from_default)
-        self.entry_from.place(x=edge_distance, rely=0.5, height=entry_height, relwidth=0.5, width=pts('-', edge_distance, '-', edge_distance), anchor='w')
+        self.entry_from.grid(row=1, column=0, columnspan=1, sticky='NWSE', padx=3, pady=3)
         self.entry_from.bind("<FocusIn>", self.focus_in_entry_from)
         
         self.entry_to = tk.Entry(fg='grey')
         self.entry_to_default = "Change to (\\1, <date/time_t/m/c>)"
-        #self.entry_to_default = "<date_c>_<date_m>_<date_t>_"
         self.entry_to.insert(0, self.entry_to_default)
-        self.entry_to.place(relx=1, x=pts('-', edge_distance), rely=0.5, height=entry_height, relwidth=0.5, width=pts('-', edge_distance, '-', edge_distance), anchor='e')
+        self.entry_to.grid(row=1, column=1, columnspan=1, sticky='NWSE', padx=3, pady=3)
         self.entry_to.bind("<FocusIn>", self.focus_in_entry_to)
 
         self.root.bind_all("<1>", lambda event:event.widget.focus_set())
+        self.root.grid_columnconfigure(0,weight=1)
+        self.root.grid_columnconfigure(1,weight=1)
+        self.root.grid_rowconfigure(0,weight=1)
+        self.root.grid_rowconfigure(1,weight=1)
         self.root.mainloop()
 
     def switch_strings(self):
