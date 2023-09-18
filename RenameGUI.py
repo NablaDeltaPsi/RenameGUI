@@ -10,7 +10,7 @@ import piexif
 import datetime as dt
 
 global version
-version = '1.0'
+version = '1.1'
 
 def blanks(number):
     string = ""
@@ -200,13 +200,24 @@ class NewGUI():
         # reset saved window position
         if os.path.isfile("RenameGUI.conf"): 
             with open("RenameGUI.conf", "r") as conf: 
-                self.root.geometry(conf.read())
+                lines = conf.readlines()
+                self.root.geometry(lines[0].strip())
+                linenr = 1
+                configs = []
+                while True:
+                    try:
+                        configs.append(lines[linenr].strip())
+                    except:
+                        break
+                    linenr += 1
         else:
             self.root.geometry("400x120+400+200")
+            configs =['File path', 'False', 'True', 'False']
         self.root.protocol("WM_DELETE_WINDOW",  self.on_close)
 
         try:
             self.root.iconbitmap('RenameGUI.ico')
+            self.root.update() # important: recalculate the window dimensions
         except:
             print("Icon nicht gefunden... Fahre fort.")
         try:
@@ -225,26 +236,29 @@ class NewGUI():
         button_height = pts(self.fontsize * 1.7)
         edge_distance = pts(self.fontsize * 0.6)
 
+        # menu bar
+        menubar = tk.Menu(self.root)
+        self.root.config(menu=menubar)
+
+        # start
+        menubar.add_command(label="Start", command=self.rename_files)
+        menubar.add_command(label="Switch", command=self.switch_strings)
+
+        # options
+        anzeige = tk.Menu(menubar, tearoff=0)
         self.check_backup = tk.BooleanVar()
-        self.cb_backup = tk.Checkbutton(text="Backup")
-        self.cb_backup.place(x=edge_distance, rely=1, y=pts('-', edge_distance), anchor='sw')
-        self.cb_backup["variable"] = self.check_backup
-        self.check_backup.set(0)
-
         self.check_case = tk.BooleanVar()
-        self.cb_case = tk.Checkbutton(text="Case insensitive")
-        self.cb_case.place(x=edge_distance, relx=0.17, rely=1, y=pts('-', edge_distance), anchor='sw')
-        self.cb_case["variable"] = self.check_case
-        self.check_case.set(1)
-
         self.check_regex = tk.BooleanVar()
-        self.cb_regex = tk.Checkbutton(text="Regex")
-        self.cb_regex.place(x=edge_distance, relx=0.45, rely=1, y=pts('-', edge_distance), anchor='sw')
-        self.cb_regex["variable"] = self.check_regex
-        self.check_regex.set(0)
+        self.check_backup.set(configs[1])
+        self.check_case.set(configs[2])
+        self.check_regex.set(configs[3])
+        anzeige.add_checkbutton(label="Backup", onvalue=1, offvalue=0, variable=self.check_backup)
+        anzeige.add_checkbutton(label="Case sensitive", onvalue=1, offvalue=0, variable=self.check_case)
+        anzeige.add_checkbutton(label="Regex", onvalue=1, offvalue=0, variable=self.check_regex)
+        menubar.add_cascade(label="Options", menu=anzeige)
 
         self.entry_path = tk.Entry(fg='grey')
-        self.entry_path_default = "File path"
+        self.entry_path_default = configs[0]
         #self.entry_path_default = "D:\\Computer\\Python\\RenameGUI\\testfiles"        
         self.entry_path.insert(0, self.entry_path_default)
         self.entry_path.place(x=edge_distance, y=edge_distance, height=entry_height, relwidth=1, width=pts('-', edge_distance, '-', edge_distance), anchor='nw')
@@ -263,12 +277,6 @@ class NewGUI():
         self.entry_to.insert(0, self.entry_to_default)
         self.entry_to.place(relx=1, x=pts('-', edge_distance), rely=0.5, height=entry_height, relwidth=0.5, width=pts('-', edge_distance, '-', edge_distance), anchor='e')
         self.entry_to.bind("<FocusIn>", self.focus_in_entry_to)
-
-        self.button_switch = tk.Button(text="Switch", command=self.switch_strings)
-        self.button_switch.place(relx=0.85, x=pts('-', edge_distance, '-', edge_distance), rely=1, y=pts('-', edge_distance), height=button_height, relwidth=0.15, anchor='se')
-
-        self.button_process = tk.Button(text="START", command=self.rename_files)
-        self.button_process.place(relx=1, x=pts('-', edge_distance), rely=1, y=pts('-', edge_distance), height=button_height, relwidth=0.15, anchor='se')
 
         self.root.bind_all("<1>", lambda event:event.widget.focus_set())
         self.root.mainloop()
@@ -407,7 +415,11 @@ class NewGUI():
 
     def on_close(self):
         with open("RenameGUI.conf", "w") as conf: 
-            conf.write(self.root.geometry())
+            conf.write(self.root.geometry() + "\n")
+            conf.write(self.entry_path.get() + "\n")
+            conf.write(str(self.check_backup.get()) + "\n")
+            conf.write(str(self.check_case.get()) + "\n")
+            conf.write(str(self.check_regex.get()))
         self.root.destroy()
 
 if __name__ == '__main__':
