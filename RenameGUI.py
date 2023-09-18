@@ -232,10 +232,6 @@ class NewGUI():
         self.default_font.configure(size=self.fontsize)
         self.text_font.configure(size=self.fontsize)
 
-        entry_height  = pts(self.fontsize * 1.6)
-        button_height = pts(self.fontsize * 1.7)
-        edge_distance = pts(self.fontsize * 0.6)
-
         # menu bar
         menubar = tk.Menu(self.root)
         self.root.config(menu=menubar)
